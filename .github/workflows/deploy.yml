@@ -10,17 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
       # 2️⃣ Deploy frontend to S3
       - name: Deploy frontend to S3
-        uses: aws-actions/s3-sync@v1
+        uses: jakejarvis/s3-sync-action@v0.6.0
         with:
+          args: --acl public-read --delete
           source-dir: frontend
-          destination: ${{ secrets.S3_BUCKET_NAME }}
-          delete: true
+          bucket: ${{ secrets.S3_BUCKET_NAME }}
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -37,7 +37,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # 4️⃣ Install Python dependencies and package Lambda
+      # 4️⃣ Package Lambda
       - name: Package Lambda
         run: |
           cd backend
