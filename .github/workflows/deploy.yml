@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Deploy frontend to S3 (without ACLs)
-      - name: Sync frontend to S3
+      # 2️⃣ Deploy frontend to S3
+      - name: Deploy frontend to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --delete
@@ -25,20 +25,26 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR: frontend
-          ACL: ''  # disables ACLs
+          ACL: "private"  # important if your bucket blocks ACLs
 
-      # 3️⃣ Invalidate CloudFront (optional)
+      # 3️⃣ Invalidate CloudFront
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+            --invalidation-batch '{
+              "Paths": {
+                "Quantity": 1,
+                "Items": ["/*"]
+              },
+              "CallerReference": "'$(date +%s)'"
+            }'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      # 4️⃣ Package backend Lambda
+      # 4️⃣ Install Lambda dependencies and zip
       - name: Package Lambda
         run: |
           cd backend
