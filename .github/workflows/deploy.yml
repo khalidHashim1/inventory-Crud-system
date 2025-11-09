@@ -31,23 +31,15 @@ jobs:
         ACL: "private"
 
     - name: Invalidate CloudFront cache
-      run: |
-        TS=$(date +%s)
-        echo "{
-          \"Paths\": {
-            \"Quantity\": 1,
-            \"Items\": [\"/*\"]
-          },
-          \"CallerReference\": \"$TS\"
-        }" > invalidation.json
+  run: |
+    aws cloudfront create-invalidation \
+      --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+      --paths "/*"
+  env:
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_REGION: ${{ secrets.AWS_REGION }}
 
-        aws cloudfront create-invalidation \
-          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-          --invalidation-batch file://invalidation.json
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
 
     # Optional Lambda deployment step
     # - name: Deploy Lambda function
