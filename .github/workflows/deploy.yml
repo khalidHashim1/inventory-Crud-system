@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # --- Deploy frontend to S3 ---
+      # 2️⃣ Deploy frontend to S3
       - name: Deploy frontend to S3
-        uses: aws-actions/s3-sync@v2
+        uses: aws-actions/s3-sync@v1
         with:
           source-dir: frontend
           destination: ${{ secrets.S3_BUCKET_NAME }}
@@ -25,13 +26,25 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # --- Deploy backend Lambda ---
-      - name: Install dependencies and package Lambda
+      # 3️⃣ Invalidate CloudFront cache
+      - name: Invalidate CloudFront
+        uses: chetan/invalidate-cloudfront-action@v1
+        with:
+          distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          paths: "/*"
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # 4️⃣ Install Python dependencies and package Lambda
+      - name: Package Lambda
         run: |
           cd backend
           pip install -r requirements.txt -t .
           zip -r ../lambda.zip .
-      
+
+      # 5️⃣ Update Lambda function
       - name: Update Lambda function
         uses: appleboy/lambda-action@master
         with:
