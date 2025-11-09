@@ -33,18 +33,10 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           TS=$(date +%s)
-          # Create JSON file using echo to avoid heredoc issues
-          echo '{
-            "Paths": {
-              "Quantity": 1,
-              "Items": ["/*"]
-            },
-            "CallerReference": "'$TS'"
-          }' > invalidation.json
-
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --invalidation-batch file://invalidation.json
+            --paths "/*" \
+            --caller-reference "$TS"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
