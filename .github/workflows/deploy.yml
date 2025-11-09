@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Configure AWS credentials
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
@@ -22,7 +20,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    # 3. Deploy frontend to S3
     - name: Deploy frontend to S3
       uses: jakejarvis/s3-sync-action@v0.5.1
       with:
@@ -33,11 +30,9 @@ jobs:
         SOURCE_DIR: "frontend"
         ACL: "private"
 
-    # 4. Invalidate CloudFront cache (CLI v1 compatible)
     - name: Invalidate CloudFront cache
       run: |
         TS=$(date +%s)
-        # Create JSON file for invalidation
         cat > invalidation.json <<EOF
 {
   "Paths": {
@@ -56,8 +51,7 @@ EOF
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    # 5. Optional Lambda deployment step
-    # Uncomment and configure if you want Lambda deployment
+    # Optional Lambda deployment
     # - name: Deploy Lambda function
     #   run: |
     #     zip -r function.zip lambda/
