@@ -10,53 +10,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # 2️⃣ Deploy frontend to S3
-      - name: Deploy frontend to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: frontend
-          ACL: "private"  # important if your bucket blocks ACLs
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      # 3️⃣ Invalidate CloudFront
-      - name: Invalidate CloudFront
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --invalidation-batch '{
-              "Paths": {
-                "Quantity": 1,
-                "Items": ["/*"]
-              },
-              "CallerReference": "'$(date +%s)'"
-            }'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+    - name: Install dependencies (if needed)
+      run: |
+        npm install
+        npm run build # if you have a build step for frontend
 
-      # 4️⃣ Install Lambda dependencies and zip
-      - name: Package Lambda
-        run: |
-          cd backend
-          pip install -r requirements.txt -t .
-          zip -r ../lambda.zip .
+    - name: Deploy frontend to S3
+      uses: jakejarvis/s3-sync-action@v0.5.1
+      with:
+        args: --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SOURCE_DIR: "frontend"
+        ACL: "private" # Set to private because new buckets often have ACL disabled
 
-      # 5️⃣ Update Lambda function
-      - name: Update Lambda function
-        uses: appleboy/lambda-action@master
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ${{ secrets.AWS_REGION }}
-          function_name: ${{ secrets.LAMBDA_FUNCTION_NAME }}
-          zip_file: lambda.zip
+    - name: Invalidate CloudFront cache
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --invalidation-batch "{\"Paths\":{\"Quantity\":1,\"Items\":[\"/*\"]},\"CallerReference\":\"$(date +%s)\"}"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    # Optional Lambda deployment step
+    # - name: Deploy Lambda function
+    #   run: |
+    #     zip -r function.zip lambda/
+    #     aws lambda update-function-code \
+    #       --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+    #       --zip-file fileb://function.zip
