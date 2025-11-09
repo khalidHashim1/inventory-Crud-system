@@ -28,21 +28,12 @@ jobs:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SOURCE_DIR: "frontend"
-        ACL: "private" # Set to private because new buckets often have ACL disabled
+        ACL: "private"
 
     - name: Invalidate CloudFront cache
       run: |
         TS=$(date +%s)
-        INVALIDATION_JSON=$(cat <<EOF
-{
-  "Paths": {
-    "Quantity": 1,
-    "Items": ["/*"]
-  },
-  "CallerReference": "$TS"
-}
-EOF
-)
+        INVALIDATION_JSON="{\"Paths\":{\"Quantity\":1,\"Items\":[\"/*\"]},\"CallerReference\":\"$TS\"}"
         aws cloudfront create-invalidation \
           --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
           --invalidation-batch "$INVALIDATION_JSON"
