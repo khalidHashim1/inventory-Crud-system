@@ -41,9 +41,10 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
         run: |
-          echo "Zipping lambda code..."
-          cd lambda
-          zip -r ../lambda.zip .
+          echo "Zipping single lambda_function.py..."
+
+          cd backend
+          zip ../lambda.zip lambda_function.py
           cd ..
 
           echo "Uploading lambda.zip to AWS Lambda..."
@@ -52,7 +53,6 @@ jobs:
             --zip-file fileb://lambda.zip
 
           echo "Lambda deployment completed."
-
 
 
       ###########################################
