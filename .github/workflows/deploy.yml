@@ -25,7 +25,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: "frontend"
 
-      # Invalidate CloudFront cache
+      # Invalidate CloudFront cache (FIXED)
       - name: Invalidate CloudFront
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -33,13 +33,18 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           TS=$(date +%s)
-          echo '{
+
+          cat > invalidation.json <<EOF
+          {
             "Paths": {
               "Quantity": 1,
               "Items": ["/*"]
             },
-            "CallerReference": "'$TS'"
-          }' > invalidation.json
+            "CallerReference": "$TS"
+          }
+          EOF
+
+          cat invalidation.json   # optional: shows JSON in logs
 
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
