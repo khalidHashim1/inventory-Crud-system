@@ -104,7 +104,7 @@ This project demonstrates:
 
 ## 🌐 Live Site
 
-[View Live Inventory Manager](https://texttospeach.khalidhashim.com)  
+[View Live Inventory Manager](https://inverntory.khalidhashim.com)  
 
 
 ---
