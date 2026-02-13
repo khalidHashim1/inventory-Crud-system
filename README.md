@@ -22,13 +22,13 @@ This project demonstrates how to build and deploy a production-style CRUD applic
 
 This project uses the following AWS services:
 
-- Amazon Web Services (AWS)
-- Amazon API Gateway
-- AWS Lambda
+- Amazon Web Services (AWS)  
+- Amazon API Gateway  
+- AWS Lambda  
 
 ### Backend API
 
-All routes are integrated with a single Lambda function:
+All routes are integrated with a single Lambda function.
 
 ---
 
@@ -43,7 +43,7 @@ All routes are integrated with a single Lambda function:
 | POST | /import | Import CSV file |
 | GET | /export | Export CSV file |
 
-All routes are integrated with AWS Lambda via API Gateway.
+All routes are integrated with **AWS Lambda** via **API Gateway**.
 
 ---
 
@@ -57,18 +57,22 @@ The frontend is a single-page application built using:
 
 The frontend communicates with the backend using:
 
+```javascript
+const API_BASE = "https://4bpzs727p7.execute-api.us-east-1.amazonaws.com";
+```
+
 ---
 
 ## 📂 CSV Import / Export
 
 ### Import
-- Accepts `.csv` files
-- Sends raw CSV text to `/import`
-- Backend processes and stores items
+- Accepts `.csv` files  
+- Sends raw CSV text to `/import`  
+- Backend processes and stores items  
 
 ### Export
-- Calls `/export`
-- Downloads generated CSV file from server
+- Calls `/export`  
+- Downloads generated CSV file  
 
 ---
 
@@ -76,11 +80,11 @@ The frontend communicates with the backend using:
 
 This application follows serverless best practices:
 
-- No EC2 servers
-- No infrastructure management
-- Scalable Lambda backend
-- Managed API routing
-- Pay-per-use pricing model
+- No EC2 servers  
+- No infrastructure management  
+- Scalable Lambda backend  
+- Managed API routing  
+- Pay-per-use pricing model  
 
 ---
 
@@ -88,31 +92,30 @@ This application follows serverless best practices:
 
 This project demonstrates:
 
-- Building REST APIs using API Gateway
-- Lambda integration (Payload Format Version 2.0)
-- CRUD operations in serverless environments
-- Handling file uploads (CSV import)
-- Returning binary/blob responses (CSV export)
-- Frontend-backend integration
-- Deploying APIs in us-east-1 (N. Virginia)
-
+- Building REST APIs using **API Gateway**  
+- Lambda integration (Payload Format Version 2.0)  
+- CRUD operations in serverless environments  
+- Handling file uploads (CSV import)  
+- Returning binary/blob responses (CSV export)  
+- Frontend-backend integration  
+- Deploying APIs in **us-east-1 (N. Virginia)**  
 
 ---
 
-## 📦 How to Run Locally
+## 🌐 Live Site
 
-1. Clone the repository
-2. Update the `API_BASE` URL if needed
-3. Open `index.html` in your browser
+[View Live Inventory Manager](https://YOUR-LIVE-SITE-URL.com)  
+
+*(Replace the URL above with your deployed frontend URL)*
 
 ---
 
 ## 🔐 Deployment Region
 
-US East (N. Virginia) – us-east-1
+**US East (N. Virginia) – us-east-1**
 
 ---
 
 ## 🧠 Author
 
-Khalid
+**Khalid**
