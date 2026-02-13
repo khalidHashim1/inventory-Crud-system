@@ -2,7 +2,7 @@
 
 A modern **Inventory Management Web Application** built with **HTML, CSS, and Vanilla JavaScript**, powered by a fully **serverless backend on AWS**.
 
-This project demonstrates how to build and deploy a production-style CRUD application using **Amazon API Gateway** and **AWS Lambda** without managing any servers.
+This project demonstrates how to build and deploy a production-style CRUD application using **Amazon API Gateway**, **AWS Lambda**, and **Amazon DynamoDB** without managing any servers.
 
 ---
 
@@ -25,10 +25,11 @@ This project uses the following AWS services:
 - Amazon Web Services (AWS)  
 - Amazon API Gateway  
 - AWS Lambda  
+- **Amazon DynamoDB** (InventoryDB) – stores all inventory items  
 
 ### Backend API
 
-All routes are integrated with a single Lambda function.
+All routes are integrated with a single Lambda function and interact with DynamoDB to store and retrieve inventory data.
 
 ---
 
@@ -43,7 +44,7 @@ All routes are integrated with a single Lambda function.
 | POST | /import | Import CSV file |
 | GET | /export | Export CSV file |
 
-All routes are integrated with **AWS Lambda** via **API Gateway**.
+All routes are integrated with **AWS Lambda** via **API Gateway**, which in turn reads/writes data to **DynamoDB (InventoryDB)**.
 
 ---
 
@@ -68,11 +69,11 @@ const API_BASE = "https://4bpzs727p7.execute-api.us-east-1.amazonaws.com";
 ### Import
 - Accepts `.csv` files  
 - Sends raw CSV text to `/import`  
-- Backend processes and stores items  
+- Backend Lambda function processes the CSV and stores items in DynamoDB  
 
 ### Export
 - Calls `/export`  
-- Downloads generated CSV file  
+- Downloads generated CSV file from DynamoDB data  
 
 ---
 
@@ -84,6 +85,7 @@ This application follows serverless best practices:
 - No infrastructure management  
 - Scalable Lambda backend  
 - Managed API routing  
+- Data stored in **DynamoDB**  
 - Pay-per-use pricing model  
 
 ---
@@ -95,6 +97,7 @@ This project demonstrates:
 - Building REST APIs using **API Gateway**  
 - Lambda integration (Payload Format Version 2.0)  
 - CRUD operations in serverless environments  
+- Using **DynamoDB** for scalable database storage  
 - Handling file uploads (CSV import)  
 - Returning binary/blob responses (CSV export)  
 - Frontend-backend integration  
@@ -104,8 +107,7 @@ This project demonstrates:
 
 ## 🌐 Live Site
 
-[View Live Inventory Manager](https://inverntory.khalidhashim.com)  
-
+🔗 https://inverntory.khalidhashim.com/
 
 ---
 
