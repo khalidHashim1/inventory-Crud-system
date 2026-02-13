@@ -96,13 +96,6 @@ This project demonstrates:
 - Frontend-backend integration
 - Deploying APIs in us-east-1 (N. Virginia)
 
----
-
-## 📸 Screenshots
-
-(Add your UI screenshot here)
-
-(Add your API Gateway integration screenshot here)
 
 ---
 
