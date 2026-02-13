@@ -104,9 +104,8 @@ This project demonstrates:
 
 ## 🌐 Live Site
 
-[View Live Inventory Manager](https://YOUR-LIVE-SITE-URL.com)  
+[View Live Inventory Manager](https://texttospeach.khalidhashim.com)  
 
-*(Replace the URL above with your deployed frontend URL)*
 
 ---
 
